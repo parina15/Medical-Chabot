@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #75b0e1;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #chatbox {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            background: #ad7ee3;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        #messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #4eb2a6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #userInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #48b9a3;
+            border-radius: 5px;
+        }
+
+        #sendButton {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background-color: #bba139;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="chatbox">
+        <h2>Medical Chatbot</h2>
+        <div id="messages"style="background-color:#f1f1f1;text-color: #000000"></div>
+        <div style="display: flex; justify-content: space-around;gap: 1rem;">
+            <input type="text" id="userInput" placeholder="Type your question here..." />
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sendButton').onclick = function () {
+            const userInput = document.getElementById('userInput').value;
+            if (userInput.trim() === "") return;
+
+            // Display user message
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<div><strong>You:</strong> ${userInput}</div>`;
+            document.getElementById('userInput').value = '';
+
+            // Send user input to the backend (assuming the backend is set up to handle this)
+            fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: userInput
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display chatbot response
+                    messagesDiv.innerHTML += `<div><strong>Chatbot:</strong> ${data.response}</div>`;
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        };
+
+        // Allow pressing Enter to send the message
+        document.getElementById('userInput').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                document.getElementById('sendButton').click();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
